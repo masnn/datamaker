@@ -26,11 +26,6 @@ for (var i in files)
         cnt++;
         list.push(files[i].split('.')[0]);
     }
-for (var i in files)
-    if (getdir(files[i]) == '.txt') {
-        cnt++;
-        list.push(files[i].split('.')[0]);
-    }
 var config = cnt + '\n';
 if (fs.existsSync('./Data')) deleteFolderRecursive('./Data');
 fs.mkdirSync('./Data');
@@ -38,11 +33,7 @@ fs.mkdirSync('./Data/Input');
 fs.mkdirSync('./Data/Output');
 for (var i in list) {
     config += list[i] + '.in|' + list[i] + '.out|' + time_limit + '|' + Math.floor(100 / cnt) + '|' + memory_limit + '\n';
-    try {
-        fs.renameSync('./' + list[i] + '.in', './Data/Input/' + list[i] + '.in');
-    } catch{
-        fs.renameSync('./' + list[i] + '.txt', './Data/Input/' + list[i] + '.in');
-    }
+    fs.renameSync('./' + list[i] + '.in', './Data/Input/' + list[i] + '.in');
     try {
         fs.renameSync('./' + list[i] + '.out', './Data/Output/' + list[i] + '.out');
     } catch{
