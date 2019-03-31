@@ -3,7 +3,7 @@ var data_n = [100, 100, 100, 100, 100, 100, 100, 1000, 1000, 1000, 1000,
     1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
 var prefix = ''
 var time_limit = 1
-var memory_limit = 12800
+var memory_limit = 128000
 function generate(num) {
     var map = new Array()
     for (var i = 0; i < 1010; i++) {
@@ -11,8 +11,8 @@ function generate(num) {
         for (var j = 0; j < 1010; j++)
             map[i][j] = 0
     }
-    var n = masnn.math.randInt(data_n[i] / 10, data_n[i])
-    var m = masnn.math.randInt(data_n[i] / 10, data_n[i])
+    var n = masnn.math.randInt(data_n[num] / 10*7, data_n[num])
+    var m = masnn.math.randInt(data_n[num] / 10*7, data_n[num])
     var output = n + ' ' + m + '\n'
     for (var j = 0; j <= n; j++)
         for (var l = 0; l <= m; l++)
@@ -36,85 +36,29 @@ function generate(num) {
 }
 
 var fs = require('fs')
-var util = require('util')
-var readline = require('readline')
 var child_process = require('child_process')
-var archiver = require('archiver')
-var masnn = require('masnn')
-var inputStream = process.stdin
-var outputStream = process.stdout
-var rl = readline.createInterface({
-    input: inputStream,
-    output: outputStream,
-    terminal: true
-})
-var cursorDx = 0, cursorDy = 0, dxInfo
-var getDisplayLength = function (str) {
-    var realLength = 0, len = str.length, charCode = -1
-    for (var i = 0; i < len; i++) {
-        charCode = str.charCodeAt(i)
-        if (charCode >= 0 && charCode <= 128) realLength += 1
-        else realLength += 2
-    }
-    return realLength
-}
-var getStrOccRowColumns = function (str) {
-    var consoleMaxColumns = outputStream.columns
-    var strDisplayLength = getDisplayLength(str)
-    var rows = parseInt(strDisplayLength / consoleMaxColumns, 10)
-    var columns = parseInt(strDisplayLength - rows * consoleMaxColumns, 10)
-    return {
-        rows: rows,
-        columns: columns
-    }
-}
-function deleteFolderRecursive(path) {
-    if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(function (file) {
-            var curPath = path + "/" + file
-            if (fs.statSync(curPath).isDirectory())
-                deleteFolderRecursive(curPath)
-            else fs.unlinkSync(curPath)
-        });
-        fs.rmdirSync(path)
-    }
-}
-function writeline(data) {
-    outputContent = util.format(data)
-    readline.moveCursor(outputStream, cursorDx * -1, cursorDy * -1)
-    readline.clearScreenDown(outputStream)
-    outputStream.write(outputContent)
-    dxInfo = getStrOccRowColumns(outputContent)
-    cursorDx = dxInfo.columns
-    cursorDy = dxInfo.rows
-}
-function writeln() {
-    outputStream.write(util.format('\r\n'))
-}
-if (fs.existsSync('./Data')) deleteFolderRecursive('./Data')
-fs.mkdirSync('./Data')
-fs.mkdirSync('./Data/Input')
-fs.mkdirSync('./Data/Output')
+var masnn = require('./masnn')
+masnn.file.deleteFolder('./Data')
+masnn.file.mkdirSync('./Data/Input')
+masnn.file.mkdirSync('./Data/Output')
 var config_data = testcnt + '\n'
 for (var i = 1; i <= testcnt; i++)
     config_data += prefix + i + '.in|' + prefix + i + '.out|' + time_limit + '|' + (100 / testcnt) + '|' + memory_limit + '\n'
 fs.writeFileSync('./Data/Config.ini', config_data)
+masnn.console.createInterface(process.stdin,process.stdout,true)
 for (var i = 1; i <= testcnt; i++) {
-    writeline('Making: ' + i)
+    masnn.console.write('Making: ' + i)
     var output = generate(i)
-    writeline("Writing Input file:")
+    masnn.console.write("Writing Input file:")
     fs.writeFileSync('./Data/Input/' + prefix + i + '.in', output)
-    writeline("Executing std:")
+    masnn.console.write("Executing std:")
     var stdout = child_process.spawnSync('./std', { input: output }).stdout
     fs.writeFileSync('./Data/Output/' + prefix + i + '.out', stdout)
-    writeline('Testdata ' + i + ' generated.')
-    writeln()
+    masnn.console.write('Testdata ' + i + ' generated.')
+    masnn.console.writeln()
 }
-writeline('Archiving...')
-var archive = archiver('zip')
-archive.pipe(fs.createWriteStream('data.zip'))
-archive.directory('Data', false)
-archive.finalize()
-writeline('Archived!')
-writeln()
-rl.close()
+masnn.console.write('Archiving...')
+masnn.archiver.archive('./Data','./data.zip')
+masnn.console.write('Archived!')
+masnn.console.writeln()
+masnn.console.close()
