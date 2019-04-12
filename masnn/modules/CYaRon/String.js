@@ -1,4 +1,4 @@
-var random =require('../py_random')
+var random =require('../random')
 function String(){
     this.random=function(length_range, kwargs={}){
         length = length_range

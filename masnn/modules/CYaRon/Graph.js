@@ -1,4 +1,4 @@
-var random = require('../py_random')
+var random = require('../random')
 function Edge(u, v, w) {
     /*__init__(u, v, w) -> None
         Initialize a edge. 

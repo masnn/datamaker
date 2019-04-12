@@ -7,7 +7,8 @@ var Graph = require("./modules/CYaRon/Graph")
 var IO = require("./modules/CYaRon/IO")
 var Sequence = require("./modules/CYaRon/Sequence")
 var String = require("./modules/CYaRon/String")
-var CYaRon={
-    Graph,IO,Sequence,String
+var random = require("./modules/random")
+var CYaRon = {
+    Graph, IO, Sequence, String
 }
-module.exports = { array, file, math, archiver, console, CYaRon }
+module.exports = { array, file, math, archiver, console, CYaRon, random }

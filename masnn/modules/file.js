@@ -24,9 +24,22 @@ function copy(source, target) {
 function rename(source, target) {
     fs.renameSync(source, target)
 }
+function getInputFiles(fileList) {
+    var reg = /([a-zA-Z]*)([0-9]*).*\.in/
+    var list = new Array()
+    var prefix = ''
+    for (i in fileList)
+        if (reg.test(fileList[i])) {
+            var data = reg.exec(fileList[i])
+            list.push(parseInt(data[2]))
+            prefix = data[1]
+        }
+    return { list, prefix };
+}
 module.exports = {
     deleteFolder: deleteFolder,
     copy: copy,
     rename: rename,
-    mkdirSync: mkdirSync
+    mkdirSync: mkdirSync,
+    getInputFiles: getInputFiles
 }
