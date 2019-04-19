@@ -1,5 +1,5 @@
 var time_limit = 1;
-var memory_limit = 12800;
+var memory_limit = 128000;
 
 const fs = require('fs');
 const archiver = require('archiver');
