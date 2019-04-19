@@ -1,15 +1,8 @@
-const generate = require('./generate')
 const fs = require('fs')
 const child_process = require('child_process')
 const masnn = require('./masnn')
 const inquirer = require('inquirer')
 inquirer.prompt([
-    {
-        type: 'list',
-        name: 'testcnt',
-        message: 'Testdata_count:',
-        choices: ['10', '20', '5']
-    },
     {
         type: 'list',
         name: 'mem_limit',
@@ -18,35 +11,28 @@ inquirer.prompt([
     },
     {
         type: 'list',
-        name: 'time_Limit',
+        name: 'time_limit',
         message: 'Timt_Limit:',
         choices: ['1', '2', '3', '4', '5']
-    },
-    {
-        type: 'input',
-        name: 'prefix',
-        message: 'Filename_prefix:',
     }
 ]).then((ans) => {
-    var testcnt = ans.testcnt;
     var mem_limit = ans.mem_limit;
     var time_limit = ans.time_limit;
-    var prefix = ans.prefix;
+    var files = fs.readdirSync('.')
+    var { list, prefix } = masnn.file.getInputFiles(files);
+    list.sort((a, b) => { return a - b })
     masnn.console.createInterface(process.stdin, process.stdout, true)
-    masnn.file.deleteFolder('./Data')
-    masnn.file.mkdirSync('./Data/Input')
+    masnn.file.deleteFolder('./Data/Output')
     masnn.file.mkdirSync('./Data/Output')
     var config_data = testcnt + '\n'
-    for (var i = 1; i <= testcnt; i++) {
+    for (var i in list) {
         masnn.console.write('Making: ' + i)
-        config_data += prefix + i + '.in|' + prefix + i + '.out|' + time_limit + '|' + (100 / testcnt) + '|' + mem_limit + '\n'
-        var output = generate(i)
-        masnn.console.write("Writing Input file:")
-        fs.writeFileSync('./Data/Input/' + prefix + i + '.in', output)
+        config_data += prefix + list[i] + '.in|' + prefix + list[i] + '.out|' + time_limit + '|' + (100 / list.length) + '|' + mem_limit + '\n'
+        var input = fs.readFileSync('./' + prefix + list[i] + '.in').toString()
         masnn.console.write("Executing std:")
-        var stdout = child_process.spawnSync('./std.exe', { input: output }).stdout;
-        fs.writeFileSync('./Data/Output/' + prefix + i + '.out', stdout)
-        masnn.console.write('Testdata ' + i + ' generated.')
+        var stdout = child_process.spawnSync('./std.exe', { input: input }).stdout
+        fs.writeFileSync('./Data/Output/' + prefix + list[i] + '.out', stdout)
+        masnn.console.write('Output ' + list[i] + ' generated.')
         masnn.console.writeln()
     }
     fs.writeFileSync('./Data/Config.ini', config_data)
