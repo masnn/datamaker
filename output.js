@@ -16,26 +16,30 @@ inquirer.prompt([
         choices: ['1', '2', '3', '4', '5']
     }
 ]).then((ans) => {
-    var mem_limit = ans.mem_limit;
+    var mem_limit = ans.mem_limit * 1024;
     var time_limit = ans.time_limit;
-    var files = fs.readdirSync('.')
-    var { list, prefix } = masnn.file.getInputFiles(files);
-    list.sort((a, b) => { return a - b })
+    var cases = masnn.file.getInputFiles(fs.readdirSync('./Data/Input/'));
     masnn.console.createInterface(process.stdin, process.stdout, true)
     masnn.file.deleteFolder('./Data/Output')
     masnn.file.mkdirSync('./Data/Output')
-    var config_data = testcnt + '\n'
-    for (var i in list) {
+    var cnt = cases.length;
+    var config = cnt + '\n';
+    var sc = Math.floor(100 / cnt);
+    var d = cnt - 100 % sc
+    masnn.console.write('Founded ' + cnt + ' cases.');
+    masnn.console.writeln()
+    masnn.console.writeln()
+    for (var i in cases) {
         masnn.console.write('Making: ' + i)
-        config_data += prefix + list[i] + '.in|' + prefix + list[i] + '.out|' + time_limit + '|' + (100 / list.length) + '|' + mem_limit + '\n'
-        var input = fs.readFileSync('./' + prefix + list[i] + '.in').toString()
+        config += cases[i].input + '|' + cases[i].output + '|' + time_limit + '|' + (i >= d ? sc + 1 : sc) + '|' + mem_limit + '\n'
+        var input = fs.readFileSync('./Data/Input/' + cases[i].input).toString()
         masnn.console.write("Executing std:")
         var stdout = child_process.spawnSync('./std.exe', { input: input }).stdout
-        fs.writeFileSync('./Data/Output/' + prefix + list[i] + '.out', stdout)
-        masnn.console.write('Output ' + list[i] + ' generated.')
+        fs.writeFileSync('./Data/Output/' + cases[i].output, stdout)
+        masnn.console.write('Output ' + cases[i].sort + ' generated.')
         masnn.console.writeln()
     }
-    fs.writeFileSync('./Data/Config.ini', config_data)
+    fs.writeFileSync('./Data/Config.ini', config)
     masnn.console.write('Archiving...')
     masnn.archiver.archive('./Data', './data.zip')
     masnn.console.write('Archived!')
