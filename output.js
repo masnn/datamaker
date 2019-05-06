@@ -1,16 +1,16 @@
 const fs = require('fs')
 const child_process = require('child_process')
 const masnn = require('./masnn')
-const inquirer = require('inquirer')
-inquirer.prompt([
+const { prompt } = require('enquirer')
+prompt([
     {
-        type: 'list',
+        type: 'select',
         name: 'mem_limit',
         message: 'Memory_Limit:',
         choices: ['128', '256', '512', '64', '32']
     },
     {
-        type: 'list',
+        type: 'select',
         name: 'time_limit',
         message: 'Timt_Limit:',
         choices: ['1', '2', '3', '4', '5']

@@ -1,10 +1,10 @@
 const generate = require('./generator')
 const fs = require('fs')
 const masnn = require('./masnn')
-const inquirer = require('inquirer')
-inquirer.prompt([
+const { prompt } = require('enquirer');
+prompt([
     {
-        type: 'list',
+        type: 'select',
         name: 'testcnt',
         message: 'Testdata_count:',
         choices: ['10', '20', '5']
@@ -30,4 +30,4 @@ inquirer.prompt([
     }
     masnn.console.writeln()
     masnn.console.close()
-})
+});
